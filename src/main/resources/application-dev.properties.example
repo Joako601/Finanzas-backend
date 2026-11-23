@@ -1,0 +1,20 @@
+# Copia este archivo como application-dev.properties y llena tus valores locales.
+# application-dev.properties está en .gitignore para que las credenciales nunca se suban.
+server.port=8090
+
+spring.datasource.url=jdbc:postgresql://localhost:5432/finanzas
+spring.datasource.username=finanzas
+spring.datasource.password=finanzas_local
+spring.datasource.driver-class-name=org.postgresql.Driver
+
+# ID del proyecto Firebase de la app Android (flavor nube)
+finanzas.firebase.project-id=tu-proyecto-firebase
+
+# Swagger UI habilitado únicamente en desarrollo local
+springdoc.api-docs.enabled=true
+springdoc.swagger-ui.enabled=true
+finanzas.openapi.enabled=true
+
+# Token gratuito de Banxico SIE API (https://www.banxico.org.mx/SieAPIRest/service/v1/token)
+# Opcional: si queda vacío, las divisas siguen operando vía Frankfurter y caché en PostgreSQL.
+finanzas.external.banxico.token=
