@@ -38,7 +38,8 @@ public class AdminCatalogoController {
     }
 
     @PostMapping
-    @Operation(summary = "Crear un nuevo producto financiero")
+    @Operation(summary = "Crear un nuevo producto financiero",
+            description = "El campo opcional `verificado` queda en `false` si se omite.")
     public ResponseEntity<ProductoFinancieroResponse> crear(@Valid @RequestBody GuardarProductoRequest request) {
         ProductoFinanciero creado = catalogoService.crear(request.aDominio());
         URI ubicacion = URI.create("/api/v1/productos/" + creado.id());
@@ -46,11 +47,12 @@ public class AdminCatalogoController {
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Actualizar un producto financiero existente")
+    @Operation(summary = "Actualizar un producto financiero existente",
+            description = "Si `verificado` se omite o es `null`, se conserva el valor actual del producto.")
     public ResponseEntity<ProductoFinancieroResponse> actualizar(
             @PathVariable @Positive Long id,
             @Valid @RequestBody GuardarProductoRequest request) {
-        ProductoFinanciero actualizado = catalogoService.actualizar(id, request.aDominio());
+        ProductoFinanciero actualizado = catalogoService.actualizar(id, request.aDominio(), request.verificado());
         return ResponseEntity.ok(ProductoFinancieroResponse.desde(actualizado));
     }
 

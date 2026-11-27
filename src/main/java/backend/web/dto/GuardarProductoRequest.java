@@ -2,6 +2,7 @@ package backend.web.dto;
 
 import backend.domain.model.ProductoFinanciero;
 import backend.web.validation.UrlHttpsSegura;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
@@ -49,7 +50,12 @@ public record GuardarProductoRequest(
 
         @Size(max = 500, message = "La URL de imagen no puede superar 500 caracteres.")
         @UrlHttpsSegura
-        String imageUrl
+        String imageUrl,
+
+        @Schema(description = "Marca el producto como revisado contra la fuente oficial. En el alta, "
+                + "si se omite queda en false. En la edición, si se omite se conserva el valor actual.",
+                nullable = true, example = "true")
+        Boolean verificado
 ) {
     public ProductoFinanciero aDominio() {
         return new ProductoFinanciero(
@@ -63,6 +69,7 @@ public record GuardarProductoRequest(
                 detalleReferencia,
                 fuenteReferencia,
                 imageUrl,
+                Boolean.TRUE.equals(verificado),
                 true,
                 null,
                 null
