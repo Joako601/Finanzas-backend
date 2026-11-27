@@ -35,8 +35,15 @@ public class SincronizacionMercadoScheduler {
         this.calendarioService = calendarioService;
     }
 
-    /** Lunes a viernes 8:00 y 15:00 hora CDMX (después de publicación FIX de Banxico / BCE). */
-    @Scheduled(cron = "0 0 8,15 * * MON-FRI", zone = "America/Mexico_City")
+    /** Expresión por defecto: lunes a viernes 13:00 hora CDMX, después de la publicación del FIX de Banxico. */
+    public static final String CRON_MERCADO_DEFECTO = "0 0 13 * * MON-FRI";
+
+    /**
+     * Una vez al día en días hábiles, según `finanzas.scheduling.mercado-cron`
+     * (por defecto {@value #CRON_MERCADO_DEFECTO}, zona `America/Mexico_City`).
+     */
+    @Scheduled(cron = "${finanzas.scheduling.mercado-cron:" + CRON_MERCADO_DEFECTO + "}",
+            zone = "America/Mexico_City")
     public void sincronizarMercado() {
         log.info("Iniciando sincronización programada de divisas e indicadores");
         ejecutarSeguro("divisas", divisasService::sincronizarParesPrincipales);
