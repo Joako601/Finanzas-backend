@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="600" height="400">
+<rect width="600" height="400" fill="#F5F5F7"/>
+<g fill="none" stroke="#111111" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">
+<g transform="rotate(6 340.0 175.0)" stroke="#8E8E93">
+<rect x="190" y="80" width="300" height="190" rx="24" fill="#F5F5F7"/>
+<rect x="226" y="136" width="56" height="42" rx="9"/>
+<line x1="226" y1="157" x2="282" y2="157" stroke-width="6"/>
+<line x1="226" y1="228" x2="262" y2="228"/>
+<line x1="286" y1="228" x2="322" y2="228"/>
+<line x1="346" y1="228" x2="382" y2="228"/>
+<line x1="406" y1="228" x2="442" y2="228"/>
+</g><g transform="rotate(-4 270.0 220.0)" stroke="#111111">
+<rect x="120" y="125" width="300" height="190" rx="24" fill="#FFFFFF"/>
+<rect x="156" y="181" width="56" height="42" rx="9"/>
+<line x1="156" y1="202" x2="212" y2="202" stroke-width="6"/>
+<line x1="156" y1="273" x2="192" y2="273"/>
+<line x1="216" y1="273" x2="252" y2="273"/>
+<line x1="276" y1="273" x2="312" y2="273"/>
+<line x1="336" y1="273" x2="372" y2="273"/>
+</g>
+</g>
+</svg>
