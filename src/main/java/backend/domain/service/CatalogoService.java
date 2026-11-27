@@ -77,6 +77,7 @@ public class CatalogoService {
                 entrada.detalleReferencia().trim(),
                 entrada.fuenteReferencia().trim(),
                 normalizarFiltro(entrada.imageUrl()),
+                entrada.verificado(),
                 true,
                 ahora,
                 ahora
@@ -84,8 +85,13 @@ public class CatalogoService {
         return repository.guardar(nuevo);
     }
 
+    /**
+     * Actualiza los datos editables de un producto activo.
+     *
+     * @param verificado nuevo valor de verificación; {@code null} conserva el valor actual
+     */
     @Transactional
-    public ProductoFinanciero actualizar(Long id, ProductoFinanciero cambios) {
+    public ProductoFinanciero actualizar(Long id, ProductoFinanciero cambios, Boolean verificado) {
         validarEntrada(cambios);
         ProductoFinanciero actual = repository.buscarActivoPorId(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("El producto financiero a actualizar no existe."));
@@ -100,6 +106,7 @@ public class CatalogoService {
                 cambios.detalleReferencia().trim(),
                 cambios.fuenteReferencia().trim(),
                 normalizarFiltro(cambios.imageUrl()),
+                verificado != null ? verificado : actual.verificado(),
                 actual.activo(),
                 actual.creadoEn(),
                 Instant.now()
@@ -122,6 +129,7 @@ public class CatalogoService {
                 actual.detalleReferencia(),
                 actual.fuenteReferencia(),
                 actual.imageUrl(),
+                actual.verificado(),
                 false,
                 actual.creadoEn(),
                 Instant.now()

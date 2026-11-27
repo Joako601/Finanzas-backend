@@ -47,7 +47,10 @@ class CatalogoControllerTest {
                 .andExpect(jsonPath("$[0].costoReferenciaPesos").value(748))
                 .andExpect(jsonPath("$[0].periodicidad").value("Anual"))
                 .andExpect(jsonPath("$[0].detalleReferencia").isString())
-                .andExpect(jsonPath("$[0].fuenteReferencia").isString());
+                .andExpect(jsonPath("$[0].fuenteReferencia").isString())
+                .andExpect(jsonPath("$[0].verificado").isBoolean())
+                .andExpect(jsonPath("$[0].verificado").value(false))
+                .andExpect(jsonPath("$[?(@.verificado == true)]", hasSize(0)));
 
         mockMvc.perform(get("/api/v1/productos")
                         .param("categoria", "Tarjeta de crédito")
@@ -142,6 +145,66 @@ class CatalogoControllerTest {
         mockMvc.perform(post("/api/v1/admin/productos")
                         .contentType(MediaType.APPLICATION_JSON).content(cuerpoActualizado).with(adminJwt))
                 .andExpect(status().isCreated());
+    }
+
+    @Test
+    void adminAltaYEdicionAceptanVerificadoYConservanValorSiSeOmite() throws Exception {
+        var adminJwt = jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        var userJwt = jwt().authorities(new SimpleGrantedAuthority("ROLE_USER"));
+        String base = """
+                {
+                  "nombre": "Tarjeta Verificable",
+                  "categoria": "Tarjeta de crédito",
+                  "entidad": "Banco Prueba",
+                  "costoReferenciaPesos": 500,
+                  "periodicidad": "Anual",
+                  "detalleReferencia": "Detalle",
+                  "fuenteReferencia": "Fuente oficial"%s
+                }
+                """;
+
+        // Alta sin el campo -> false
+        String sinCampo = mockMvc.perform(post("/api/v1/admin/productos")
+                        .contentType(MediaType.APPLICATION_JSON).content(base.formatted("")).with(adminJwt))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.verificado").value(false))
+                .andReturn().getResponse().getContentAsString();
+        Long id = ((Number) JsonPath.read(sinCampo, "$.id")).longValue();
+
+        // Edición con true -> true y visible en la consulta pública
+        mockMvc.perform(put("/api/v1/admin/productos/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(base.formatted(",\n  \"verificado\": true")).with(adminJwt))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.verificado").value(true));
+        mockMvc.perform(get("/api/v1/productos/{id}", id).with(userJwt))
+                .andExpect(jsonPath("$.verificado").value(true));
+
+        // Edición sin el campo (o null) -> conserva true
+        mockMvc.perform(put("/api/v1/admin/productos/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON).content(base.formatted("")).with(adminJwt))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.verificado").value(true));
+        mockMvc.perform(put("/api/v1/admin/productos/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(base.formatted(",\n  \"verificado\": null")).with(adminJwt))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.verificado").value(true));
+
+        // Edición explícita con false -> false
+        mockMvc.perform(put("/api/v1/admin/productos/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(base.formatted(",\n  \"verificado\": false")).with(adminJwt))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.verificado").value(false));
+
+        // Alta con true -> true
+        mockMvc.perform(post("/api/v1/admin/productos")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(base.replace("Tarjeta Verificable", "Tarjeta Verificada")
+                                .formatted(",\n  \"verificado\": true")).with(adminJwt))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.verificado").value(true));
     }
 
     @Test

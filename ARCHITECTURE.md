@@ -33,3 +33,8 @@ flowchart LR
 2. **Autenticación sin contraseñas locales:** Spring Security valida el `Firebase ID Token` contra las llaves públicas JWKS de Google (`iss`, `aud`, `exp`, `sub`).
 3. **Resiliencia ante APIs externas:** las consultas a APIs públicas corren con timeouts cortos (`5 s` conexión, `8 s` lectura) y se cachean en PostgreSQL; si un proveedor cae, el servicio responde con el último dato válido almacenado.
 4. **Esquema versionado:** `spring.jpa.hibernate.ddl-auto=validate` obliga a que toda evolución pase por migraciones Flyway (`src/main/resources/db/migration`).
+
+## Sincronización y catálogo
+
+- **Sincronización de mercado:** `SincronizacionMercadoScheduler` actualiza divisas e indicadores una vez al día, de lunes a viernes, según `finanzas.scheduling.mercado-cron` (por defecto `0 0 13 * * MON-FRI`, zona `America/Mexico_City`, después de la publicación del FIX de Banxico). Los días inhábiles del año actual y del siguiente se aseguran el día 1 de cada mes. Con `finanzas.scheduling.enabled=false` (pruebas) no se programa ninguna tarea.
+- **Productos verificados:** `producto_financiero.verificado` (migración `V3`, `NOT NULL DEFAULT FALSE`) indica que un administrador revisó los datos contra la fuente oficial. Se expone como `verificado` en el JSON de productos y se administra desde `/api/v1/admin/productos`. En el alta, si se omite, queda en `false`. En la edición, si se omite, se conserva el valor actual. El catálogo de ejemplo queda sin verificar.

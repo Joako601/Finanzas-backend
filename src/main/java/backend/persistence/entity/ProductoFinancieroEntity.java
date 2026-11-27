@@ -46,6 +46,9 @@ public class ProductoFinancieroEntity {
     private String imageUrl;
 
     @Column(nullable = false)
+    private boolean verificado;
+
+    @Column(nullable = false)
     private boolean activo;
 
     @Column(name = "activo_unico")
@@ -135,6 +138,14 @@ public class ProductoFinancieroEntity {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public boolean isVerificado() {
+        return verificado;
+    }
+
+    public void setVerificado(boolean verificado) {
+        this.verificado = verificado;
     }
 
     public boolean isActivo() {
